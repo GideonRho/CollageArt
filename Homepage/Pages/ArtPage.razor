@@ -1,0 +1,73 @@
+@page "/Art/{ArtId}"
+@inherits OwningComponentBase
+@using Microsoft.Extensions.DependencyInjection
+@using ClassLibrary.Models.Database
+@using ClassLibrary.Models.Enums
+@using ClassLibrary.Services
+
+<PageTitle>@Title</PageTitle>
+
+@if (Art != null)
+{
+    <div class="entryContainer">
+        <a href="@ArtImageMax()">
+            <img class="imageEntry" src="@ArtImage()" alt="@Art.Title">
+        </a>
+        <div class="imageText">
+            <h1>@Art.Title</h1>
+            @Art.Date<br>
+            @Art.Size()<br>
+            <br>
+            @foreach (var detailRow in DetailRows)
+            {
+                <div class="row">
+                    @foreach (var detail in detailRow)
+                    {
+                        <div class="col-sm">
+                            <img class="detailImage" src="@DetailImage(detail)" alt="Ausschnitt">
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public string ArtId { get; set; }
+
+    private Art Art { get; set; }
+    private List<List<Detail>> DetailRows { get; } = new();
+
+    private DatabaseService DatabaseService { get; set; }
+    private LinkService LinkService { get; set; }
+    private ImageService ImageService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        DatabaseService = ScopedServices.GetRequiredService<DatabaseService>();
+        LinkService = ScopedServices.GetRequiredService<LinkService>();
+        ImageService = ScopedServices.GetRequiredService<ImageService>();
+        Art = await DatabaseService.LoadArt(Id);
+
+        if (Art != null)
+        {
+            for (int i = 0; i < Art.Details.Count; i++)
+            {
+                if (i % 2 == 0) DetailRows.Add(new List<Detail>());
+                DetailRows[^1].Add(Art.Details[i]);
+            }
+        }
+    }
+
+    private string ArtImage() => ImageService.ImagePath(Art, ArtSize.Normal);
+    private string ArtImageMax() => ImageService.ImagePath(Art, ArtSize.Max);
+
+    private string DetailImage(Detail detail) => ImageService.ImagePath(detail, ArtSize.Normal);
+    
+    private int Id => int.Parse(ArtId);
+    private string Title => Art.Title;
+
+}

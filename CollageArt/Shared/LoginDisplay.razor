@@ -1,0 +1,9 @@
+<AuthorizeView>
+    <Authorized>
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" Link="Identity/Account/LogOut"/>
+    </Authorized>
+    <NotAuthorized>
+        <MudIconButton Icon="@Icons.Material.Filled.Login" Color="Color.Inherit" Link="Identity/Account/Login"/>
+        <MudIconButton Icon="@Icons.Material.Filled.AppRegistration" Color="Color.Inherit" Link="Identity/Account/Register"/>
+    </NotAuthorized>
+</AuthorizeView>

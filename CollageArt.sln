@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollageArt", "CollageArt\CollageArt.csproj", "{547C38F1-52F9-4082-B821-0E37290DDF56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary", "ClassLibrary\ClassLibrary.csproj", "{9195AF32-96FC-4FD5-A0AF-27F1B107EEFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Homepage", "Homepage\Homepage.csproj", "{B9A3F05A-9D68-4D1F-9038-BC9B6C331C12}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{547C38F1-52F9-4082-B821-0E37290DDF56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{547C38F1-52F9-4082-B821-0E37290DDF56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{547C38F1-52F9-4082-B821-0E37290DDF56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{547C38F1-52F9-4082-B821-0E37290DDF56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9195AF32-96FC-4FD5-A0AF-27F1B107EEFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9195AF32-96FC-4FD5-A0AF-27F1B107EEFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9195AF32-96FC-4FD5-A0AF-27F1B107EEFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9195AF32-96FC-4FD5-A0AF-27F1B107EEFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9A3F05A-9D68-4D1F-9038-BC9B6C331C12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9A3F05A-9D68-4D1F-9038-BC9B6C331C12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9A3F05A-9D68-4D1F-9038-BC9B6C331C12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9A3F05A-9D68-4D1F-9038-BC9B6C331C12}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

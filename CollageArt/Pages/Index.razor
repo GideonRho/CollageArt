@@ -1,0 +1,40 @@
+@page "/"
+@attribute [Authorize(Roles = "admin")]
+@inherits OwningComponentBase
+@inject UserService _userService
+@using Microsoft.Extensions.DependencyInjection
+@using ClassLibrary.Services
+@using CollageArt.Services
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@Build">Statische Webseite bauen</MudButton>
+    <MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Link="bulkUpload">Bulk Upload</MudButton>
+    <MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@ResizeImages">Bilder aktualisieren</MudButton>
+</MudContainer>
+
+@code
+{
+    private BuilderService BuilderService { get; set; }
+    private ImageService ImageService { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        BuilderService = ScopedServices.GetRequiredService<BuilderService>();
+        ImageService = ScopedServices.GetRequiredService<ImageService>();
+    }
+
+    private async Task ResizeImages() => await ImageService.ResizeAll();
+    
+    private async Task Build()
+    {
+        await BuilderService.BuildAll();
+    }
+
+    private async Task GiveAdmin()
+    {
+        await _userService.GiveAdmin();
+    }
+    
+}

@@ -1,0 +1,78 @@
+@page "/"
+@inherits OwningComponentBase
+@using Microsoft.Extensions.DependencyInjection
+@using ClassLibrary.Services
+@using ClassLibrary.Models.Database
+@using ClassLibrary.Models.Enums
+@using ClassLibrary.Models.Filter
+
+<PageTitle>Collageart-Ducheyne</PageTitle>
+
+<div class="homeBox">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm">
+                <div class="homeText">
+                    @MarkupText
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            @foreach (var category in CategoryList)
+            {
+                <div class="col-sm">
+                    <a class="hiddenLink" href=@CategoryPath(category)>
+                        <img class="homeImage"
+                             src=@CategoryImage(category) alt=@category.Name>
+                        <div class="homeCardText">
+                            <h3>@category.Name</h3>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+
+        <div class="row">
+            <div class="col-sm">
+                <div class="homeText">
+                    @MarkupCopyright
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code
+{
+    private List<Category> CategoryList { get; set; }
+    
+    private TextPage HomeText { get; set; }
+    private TextPage CopyrightText { get; set; }
+    
+    private MarkupString MarkupText { get; set; }
+    private MarkupString MarkupCopyright { get; set; }
+    
+    private DatabaseService DatabaseService { get; set; }
+    private LinkService LinkService { get; set; }
+    private ImageService ImageService { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        DatabaseService = ScopedServices.GetRequiredService<DatabaseService>();
+        LinkService = ScopedServices.GetRequiredService<LinkService>();
+        ImageService = ScopedServices.GetRequiredService<ImageService>();
+        CategoryList = await DatabaseService.SearchCategories(new CategoryFilter());
+        
+        HomeText = await DatabaseService.LoadText(TextType.Home);
+        MarkupText = (MarkupString) HomeText.Text;
+        CopyrightText = await DatabaseService.LoadText(TextType.Copyright);
+        MarkupCopyright = (MarkupString)CopyrightText.Text;
+    }
+
+    private string CategoryImage(Category category) => ImageService.ImagePath(category.TitleArt, ArtSize.Min);
+    private string CategoryPath(Category category) => LinkService.CategoryPath(category);
+    
+}

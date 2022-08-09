@@ -1,0 +1,49 @@
+@page "/Text/{TextId}"
+@inherits OwningComponentBase
+@using Microsoft.Extensions.DependencyInjection
+@using ClassLibrary.Models.Database
+@using ClassLibrary.Services
+
+<PageTitle>@Title</PageTitle>
+
+@if (TextPage != null)
+{
+    <div class="text">
+        <h2>@TextPage.Title</h2>
+        <br/>
+        @MarkupText
+    </div>
+}
+
+@code {
+    
+    [Parameter]
+    public string TextId { get; set; }
+
+    private TextPage TextPage { get; set; }
+    private MarkupString MarkupText { get; set; }
+    
+    private DatabaseService DatabaseService { get; set; }
+    private LinkService LinkService { get; set; }
+    private ImageService ImageService { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        DatabaseService = ScopedServices.GetRequiredService<DatabaseService>();
+        LinkService = ScopedServices.GetRequiredService<LinkService>();
+        ImageService = ScopedServices.GetRequiredService<ImageService>();
+        TextPage = await DatabaseService.LoadText(Id);
+        if (TextPage != null)
+            MarkupText = (MarkupString)TextPage.Text;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        TextPage = await DatabaseService.LoadText(Id);
+        MarkupText = (MarkupString)TextPage.Text;
+    }
+
+    private int Id => int.Parse(TextId);
+    private string Title => TextPage.Title;
+
+}

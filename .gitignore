@@ -1,0 +1,6 @@
+.idea/
+bin/
+obj/
+Database/app.db
+CollageArt/appsettings.Development.json
+CollageArt/appsettings.Production.json

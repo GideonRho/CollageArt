@@ -1,0 +1,95 @@
+@page "/Category/{CategoryId}"
+@inherits OwningComponentBase
+@using Microsoft.Extensions.DependencyInjection
+@using ClassLibrary.Services
+@using ClassLibrary.Models.Database
+@using ClassLibrary.Models.Enums
+
+<PageTitle>@Title</PageTitle>
+
+@if (Category != null)
+{
+    <div class="slideshowBox">
+        <div id="demo" class="carousel slide" data-ride="carousel" data-wrap="false">
+            <div class="carousel-inner">
+
+                @foreach (var art in Category.Arts)
+                {
+                    if (!art.IsPrivate)
+                    {
+                        <div class=@CarouselClass(art)>
+                            <a href=@ArtLink(art)>
+                                <img class="d-block w-50 slideshowImage"
+                                     src=@ArtImage(art)
+                                     alt=@art.Title>
+                            </a>
+                            <div class="slideshowCaption">
+                                <h3>@ArtCaption(art)</h3>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+
+            <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </a>
+            <a class="carousel-control-next" href="#demo" data-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </a>
+
+        </div>
+    </div>
+}
+
+@code {
+    
+    [Parameter]
+    public string CategoryId { get; set; }
+
+    private Category Category { get; set; }
+    
+    private DatabaseService DatabaseService { get; set; }
+    private LinkService LinkService { get; set; }
+    private ImageService ImageService { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        DatabaseService = ScopedServices.GetRequiredService<DatabaseService>();
+        LinkService = ScopedServices.GetRequiredService<LinkService>();
+        ImageService = ScopedServices.GetRequiredService<ImageService>();
+        Category = await DatabaseService.LoadCategory(Id);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Category = await DatabaseService.LoadCategory(Id);
+    }
+
+    private string ArtLink(Art art)
+    {
+        return LinkService.ArtPath(art);
+    }
+
+    private string ArtImage(Art art)
+    {
+        return ImageService.ImagePath(art, ArtSize.Normal);
+    }
+
+    private string ArtCaption(Art art)
+    {
+        return $"{art.Date} {art.Title} {art.Width}x{art.Height} collageart-ducheyne";
+    }
+
+    private string CarouselClass(Art art)
+    {
+        if (Category.Arts[0] == art)
+            return $"carousel-item active";
+        return $"carousel-item";
+    }
+    
+    private int Id => int.Parse(CategoryId);
+    private string Title => Category.Name;
+
+}

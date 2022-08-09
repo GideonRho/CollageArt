@@ -1,0 +1,79 @@
+﻿@inherits OwningComponentBase
+@using Microsoft.Extensions.DependencyInjection
+@using ClassLibrary.Services
+@using ClassLibrary.Models.Database
+@using ClassLibrary.Models.Enums
+@using ClassLibrary.Models.Filter
+
+<nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="navbar-collapse collapse justify-content-center" id="collapsingNavbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="@HomePath()">
+                    <div class="navigationText">
+                        Meine Themen
+                    </div>
+                </a>
+            </li>
+            @foreach (var text in TextPages)
+            {
+                <li class="nav-item">
+                    <a class="nav-link" href="@Path(text)">
+                        <div class="navigationText">
+                            @text.Title
+                        </div>
+                    </a>
+                </li>
+            }
+            @foreach (var category in CategoryList)
+            {
+                <li class="nav-item">
+                    <a class="nav-link" href="@Path(category)">
+                        <div class="navigationCategory">
+                            @category.Name
+                        </div>
+                    </a>
+                </li>
+            }
+            <li class="nav-item">
+                <a class="nav-link" href="@Path(Imprint)">
+                    <div class="navigationText">
+                        @Imprint.Title
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+</nav>
+
+@code
+{
+    private List<Category> CategoryList { get; set; }
+    private List<TextPage> TextPages { get; set; }
+    private TextPage Imprint { get; set; }
+
+    private DatabaseService DatabaseService { get; set; }
+    private LinkService LinkService { get; set; }
+    private ImageService ImageService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        DatabaseService = ScopedServices.GetRequiredService<DatabaseService>();
+        LinkService = ScopedServices.GetRequiredService<LinkService>();
+        ImageService = ScopedServices.GetRequiredService<ImageService>();
+        CategoryList = await DatabaseService.SearchCategories(new CategoryFilter());
+        TextPages = await DatabaseService.SearchText(new TextFilter {Type = TextType.Page});
+        Imprint = await DatabaseService.LoadText(TextType.Impressum);
+    }
+
+    private string Path(Category category) => LinkService.CategoryPath(category);
+    private string Path(TextPage text) => LinkService.TextPath(text);
+    private string HomePath() => LinkService.HomePath();
+
+}

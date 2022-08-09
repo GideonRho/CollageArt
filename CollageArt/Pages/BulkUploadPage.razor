@@ -1,0 +1,63 @@
+@page "/BulkUpload"
+@attribute [Authorize(Roles = "admin")]
+@inherits OwningComponentBase
+@using Microsoft.Extensions.DependencyInjection
+@using ClassLibrary.Services
+@using ClassLibrary.Models.Database
+@using ClassLibrary.Models.Filter
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <InputFile id="fileInput" OnChange="UploadFiles" hidden multiple/>
+
+    <MudSelect @bind-Value="@Category" T="@Category" Label="Kategorie">
+        @foreach (var category in Categories)
+        {
+            <MudSelectItem Value="@category"/>
+        }
+    </MudSelect>
+    <MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+    <MudFab HtmlTag="label"
+            Color="Color.Secondary"
+            Icon="@Icons.Filled.Image"
+            Label="Bild hochladen"
+            for="fileInput"/>
+
+    @if (Exception != null)
+    {
+        <MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+        <p>@Exception.ToString()</p>
+    }
+    
+</MudContainer>
+
+@code {
+    
+    private List<Category> Categories { get; set; }
+    private Category Category { get; set; }
+
+    private DatabaseService DatabaseService { get; set; }
+    private ImageService ImageService { get; set; }
+
+    private Exception Exception { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        DatabaseService = ScopedServices.GetRequiredService<DatabaseService>();
+        ImageService = ScopedServices.GetRequiredService<ImageService>();
+        Categories = await DatabaseService.SearchCategories(new CategoryFilter(), true);
+    }
+
+    private async Task UploadFiles(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            await ImageService.BulkUpload(Category, e.GetMultipleFiles(30));
+            Exception = null;
+        }
+        catch (Exception exception)
+        {
+            Exception = exception;
+        }
+    }
+    
+}

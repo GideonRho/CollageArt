@@ -1,0 +1,61 @@
+@page "/CategoryEditor/{CategoryId}"
+@attribute [Authorize(Roles = "admin")]
+@inherits OwningComponentBase
+@inject NavigationManager _navigationManager
+@using Microsoft.Extensions.DependencyInjection
+@using ClassLibrary.Services
+@using ClassLibrary.Models.Database
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    @if (Category != null)
+    {
+        <MudTextField T="string" Label="Name" @bind-Value="@Category.Name" Variant="Variant.Outlined"></MudTextField>
+        <MudSelect @bind-Value="@Category.TitleArt" T="@Art" Label="Titelbild">
+            @foreach (var art in Category.Arts)
+            {
+                <MudSelectItem Value="@art"/>
+            }
+        </MudSelect>
+        <MudCheckBox @bind-Checked="@Category.IsPrivate" Label="Privat"></MudCheckBox>
+        
+        <MudDivider DividerType="DividerType.Middle" Class="my-6"/>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@Save">Speichern</MudButton>
+    }
+    else
+    {
+        <h1>Loading...</h1>
+    }
+</MudContainer>
+
+@code {
+    
+    [Parameter]
+    public string CategoryId { get; set; }
+
+    private Category Category { get; set; }
+    
+    private DatabaseService DatabaseService { get; set; }
+    private BuilderService BuilderService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        DatabaseService = ScopedServices.GetRequiredService<DatabaseService>();
+        BuilderService = ScopedServices.GetRequiredService<BuilderService>();
+        Category = Id == 0 ? new Category(): await DatabaseService.LoadCategory(Id, true);
+    }
+
+    private async Task Save()
+    {
+        await DatabaseService.SaveCategory(Category);
+        await BuildStatic();
+        _navigationManager.NavigateTo("CategoryEditorList");
+    }
+
+    private async Task BuildStatic()
+    {
+        await BuilderService.Build(Category);
+    }
+    
+    private int Id => int.Parse(CategoryId);
+
+}
